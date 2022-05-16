@@ -2,6 +2,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 def plot_article_counts_over_time(years):
     """
     Histogram of counts of articles in years
@@ -33,3 +34,53 @@ def plot_article_counts_over_time(years):
     ax.set_title("Count of Articles by Year")
 
     return fig, ax
+
+
+def construct_legend_label(topic, feature_names, n_top_words_for_legend):
+    """
+    Creates a label for one topic with top words, for inclusion in legend
+    
+    Parameters:
+    -----------
+    topic: np.ndarray
+        An array of length vocab_size that represents a topic 
+        (e.g. an element of lda.components_)
+    feature_names: list of str
+        List of words
+    n_top_words_for_legend: int
+        Number of words to include
+    Returns:
+    --------
+    label: str
+    """
+    top_features_ind = topic.argsort()[: -n_top_words_for_legend - 1 : -1]
+    top_features = [feature_names[i] for i in top_features_ind]
+    label = ''
+    for word in top_features:
+        label += word
+        label += ', '
+    label += "..."
+    return label
+
+
+def construct_title(model_name, smooth, normalize_by_yearly_counts):
+    """
+    Make title for plot of topics over time
+
+    Parameters:
+    -----------
+    model_name: str
+        E.g. LDA, NMF
+    smooth: bool
+    normalize_by_yearly_counts: bool
+
+    Returns:
+    --------
+    title: str
+    """
+    title = model_name
+    if smooth:
+        title += ", smoothed"
+    if normalize_by_yearly_counts:
+        title += ", normalized"
+    return title
