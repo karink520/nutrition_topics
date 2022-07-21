@@ -1,5 +1,9 @@
 import pdfplumber
 import os
+import fitz
+import pytesseract
+from PIL import Image
+from tempfile import TemporaryDirectory
 
 def get_date_list_from_filenames(filenames):
     """
@@ -22,6 +26,61 @@ def get_date_list_from_filenames(filenames):
     for filename in filenames:
         years.append(int(filename[-8:-4]))
     return years
+
+
+def pdf_to_text_via_ocr(pdf_file, out_directory):
+    """
+    Convert a pdf file to text via ocr and save the output.
+    
+    Parameters:
+    -----------
+    pdf_file: str
+        Assumed to be of the format DIRECTORY_NAME/filename.pdf
+    out_directory: str
+        E.g. 'level2_txt_ocr'
+
+    Notes:
+    ------
+    Partially adapted from https://www.geeksforgeeks.org/python-reading-contents-of-pdf-using-ocr-optical-character-recognition/
+    """
+    
+    # create path to output file
+    article_filename = PDF_file.split("/")[-1]
+    article_filename_root = article_filename.split(".")[0]
+    text_file = out_directory + "/" + article_filename_root + ".txt" # output file
+
+     # Store all the pages of the PDF in a variable
+    image_file_list = []
+
+    with TemporaryDirectory() as tempdir:
+        # Create a temporary directory to hold our temporary images.
+
+        # 1. Convert PDF to images
+        doc = fitz.open(PDF_file)
+        page_enumeration = 1
+
+        # Iterate through pages and convert to image
+        for page in doc:
+            # Create a file name to store the image
+            filename = f"{tempdir}\page_{page_enumeration:03}.jpg"
+            # save the image
+            pix = page.get_pixmap()
+            pix.save(filename, "JPEG")
+            image_file_list.append(filename)
+            page_enumeration+=1
+
+        # 2. Convert image to text via ocr
+        with open(text_file, "a") as output_file:
+            # Process the image of each page
+            for image_file in image_file_list:
+
+                # Recognize the text as string in image using pytesserct
+                text = str(((pytesseract.image_to_string(Image.open(image_file)))))
+                # Process hyphens at the end of a line
+                text = text.replace("-\n", "")
+
+                # Finally, write the processed text to the file.
+                output_file.write(text)
 
 
 def create_doc_list_from_pdfs(pdf_filenames, txt_directory, to_txt=False):
