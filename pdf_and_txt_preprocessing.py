@@ -83,6 +83,8 @@ def load_documents_from_txt(txt_directory):
         list of strings, one for each paper whose txt file was processed
     """
     documents = []
+    years = []
+    refids = []
     txt_filenames = [txt_directory + '/' + f for f in os.listdir(txt_directory) if not f.startswith(".")]
     for txt_filename in txt_filenames:
         doc_text = ''
@@ -91,6 +93,11 @@ def load_documents_from_txt(txt_directory):
             for line in lines:
                 doc_text += line
         documents.append(doc_text)
+        year = int(txt_filename[-8:-4])
+        years.append(year)
+        refid =  txt_filename.split("/")[-1].split("-")[0] # get ints after / and before -
+        refids.append(refid)
         
-    return documents
+    return documents, years, refids, txt_filenames
+
             
