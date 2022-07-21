@@ -45,7 +45,7 @@ def pdf_to_text_via_ocr(pdf_file, out_directory):
     """
     
     # create path to output file
-    article_filename = PDF_file.split("/")[-1]
+    article_filename = pdf_file.split("/")[-1]
     article_filename_root = article_filename.split(".")[0]
     text_file = out_directory + "/" + article_filename_root + ".txt" # output file
 
@@ -56,7 +56,7 @@ def pdf_to_text_via_ocr(pdf_file, out_directory):
         # Create a temporary directory to hold our temporary images.
 
         # 1. Convert PDF to images
-        doc = fitz.open(PDF_file)
+        doc = fitz.open(pdf_file)
         page_enumeration = 1
 
         # Iterate through pages and convert to image
@@ -97,6 +97,8 @@ def create_doc_list_from_pdfs(pdf_filenames, txt_directory, to_txt=False):
     --------
     documents: list of str
         list of strings, one for each paper whose pdf was processed
+        each contains the full text of the doc corresponding 
+        parsed pdf
     txt_directory: str
         If to_txt is true, this is where .txx files get saved, one for
         each pdf in pdf_filnames.
