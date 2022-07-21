@@ -117,6 +117,10 @@ def create_doc_list_from_pdfs(pdf_filenames, txt_directory, to_txt=False):
             doc_text += ' '
             doc_text += page.extract_text(x_tolerance=2, use_text_flow=True,) 
         paper_pdf.close()
+
+        if doc_text.isspace():
+            print("parsing filename resulted in text that was all spaces, proceeding with ocr with tesseract instead")
+            pdf_to_text_via_ocr(filename, txt_directory)
         documents.append(doc_text)
         
         if to_txt:
